@@ -1,0 +1,22 @@
+| ResetRequest | CREATE TABLE `ResetRequest` (
+  `Account` tinyblob NOT NULL,
+  `EMail` text NOT NULL,
+  `RequestedBy` varchar(15) NOT NULL DEFAULT '',
+  PRIMARY KEY (`Account`(32)),
+  KEY `Account` (`Account`(32))
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 |
+
+| ResetValidation | CREATE TABLE `ResetValidation` (
+  `Account` tinyblob NOT NULL,
+  `ValidationKey` varchar(32) DEFAULT NULL,
+  `Expiration` datetime DEFAULT NULL,
+  `Validated` tinyint(1) NOT NULL DEFAULT '0',
+  `ValidatedBy` varchar(15) NOT NULL DEFAULT '',
+  PRIMARY KEY (`Account`(32))
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 |
+
+| ForgotAccount | CREATE TABLE `ForgotAccount` (
+  `EMail` varchar(320) NOT NULL,
+  `RequestedBy` varchar(15) NOT NULL DEFAULT '',
+  PRIMARY KEY (`EMail`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 |
