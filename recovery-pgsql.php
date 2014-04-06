@@ -75,7 +75,10 @@ EOF;
 			</ul>
 	</div>
 EOF;
-		} elseif ( $reqtype == "passwordreset" && (!($stmt = $_db->prepare("SELECT Account FROM ResetValidation WHERE Account = ? LIMIT 1")) || !$stmt->bind_param("s", $account) || !$stmt->execute() || !($result = $stmt->store_result()) || $result->num_rows != 0)) {
+		} elseif ( $reqtype == "passwordreset" &&
+    ( !prepare($_db, "pwreset", 'SELECT Account FROM ResetValidation WHERE Account = $1 LIMIT 1') ||
+    ($res = pg_execute("pwreset", array($account))) === false ||
+    pg_num_rows($res) != 0 ) {
 	echo <<<EOF
 	<div>
 			<h2>Failure</h2>
@@ -87,11 +90,13 @@ EOF;
 EOF;
 		} else {
 			$ip = $_SERVER['REMOTE_ADDR'];
-                	if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
-                        	$ip = array_pop(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']));
-                	}
+      if (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER)) {
+        $ip = array_pop(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']));
+      }
 
-			if ( $reqtype == "passwordreset" && ( !pg_prepare($_db, "reset", 'INSERT INTO ResetRequest (Account, EMail, RequestedBy) VALUES($1, $2, $3)') || ($res = pg_execute("reset", array($account, $email, $ip))) === false)) {
+			if ( $reqtype == "passwordreset" &&
+      ( !pg_prepare($_db, "reset", 'INSERT INTO ResetRequest (Account, EMail, RequestedBy) VALUES($1, $2, $3)') ||
+      ($res = pg_execute("reset", array($account, $email, $ip))) === false)) {
 	echo <<<EOF
 	<div>
 				<h2>Failure</h2>
@@ -100,7 +105,9 @@ EOF;
 				</ul>
 	</div>
 EOF;
-			} elseif ( $reqtype == "accountnames" && ( !pg_prepare($_db, "forgot", 'INSERT INTO ForgotAccount (EMail, RequestedBy) VALUES ($1, $2)') || ($res = pg_execute("forgot", array($email, $ip))) === false)) {
+			} elseif ( $reqtype == "accountnames" &&
+      ( !pg_prepare($_db, "forgot", 'INSERT INTO ForgotAccount (EMail, RequestedBy) VALUES ($1, $2)') ||
+      ($res = pg_execute("forgot", array($email, $ip))) === false)) {
 	echo <<<EOF
 	<div>
 	<h2>Failure</h2>
