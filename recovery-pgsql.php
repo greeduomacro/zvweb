@@ -78,7 +78,7 @@ EOF;
 		} elseif ( $reqtype == "passwordreset" &&
     ( !prepare($_db, "pwreset", 'SELECT Account FROM ResetValidation WHERE Account = $1 LIMIT 1') ||
     ($res = pg_execute("pwreset", array($account))) === false ||
-    pg_num_rows($res) != 0 ) {
+    pg_num_rows($res) != 0 ) ) {
 	echo <<<EOF
 	<div>
 			<h2>Failure</h2>
